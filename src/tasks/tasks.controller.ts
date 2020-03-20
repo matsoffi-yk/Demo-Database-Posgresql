@@ -1,48 +1,51 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Post, UsePipes, ValidationPipe, Body, Delete, Patch, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task, TaskStatus } from './tasks.model';
+import { Task } from './task.entity';
 import { TaskCreateDto } from './dto/task-create.dto';
-import { TaskFilterDto } from './dto/task-filter.dto';
 import { TaskStatusValidationPipe } from './pipes/task-validation.pipe';
+import { TaskStatus } from './task-status.enum';
+import { TaskFilterDto } from './dto/task-filter.dto';
 
 @Controller('tasks')
 export class TasksController {
     constructor(private taskSevice: TasksService) { }
 
     @Get()
+    @UsePipes(ValidationPipe)
     getTasks(
         @Query() taskFilterDto: TaskFilterDto
-    ) {
+    ): Promise<Task[]> {
         return this.taskSevice.getTasksWithFilter(taskFilterDto);
     }
 
     @Post()
     @UsePipes(ValidationPipe)
-    createTask(
+    async createTask(
         @Body() taskCreateDto: TaskCreateDto
-    ): Task {
+    ): Promise<Task> {
         return this.taskSevice.createTask(taskCreateDto);
     }
 
     @Get('/:id')
-    getTaskByID(
-        @Param('id') id: string
-    ): Task {
+    async getTaskByID(
+        @Param('id', ParseIntPipe) id: number
+    ): Promise<Task> {
         return this.taskSevice.getTaskByID(id);
     }
 
     @Delete('/:id')
-    deleteTask(
-        @Param('id') id: string
-    ): void {
+    async deleteTask(
+        @Param('id', ParseIntPipe) id: number
+    ): Promise<void> {
         return this.taskSevice.deleteTask(id);
     }
 
     @Patch('/:id/status')
-    updateTaskStatus(
-        @Param('id') id: string,
+
+    async updateTaskStatus(
+        @Param('id', ParseIntPipe) id: number,
         @Body('status', TaskStatusValidationPipe) status: TaskStatus
-    ): Task {
+    ): Promise<Task> {
         return this.taskSevice.updateTaskStatus(id, status);
     }
 }
