@@ -1,17 +1,17 @@
 import { Repository, EntityRepository } from "typeorm";
-import { Task } from "./task.entity";
+import { Rask } from "./task.entity";
 import { TaskCreateDto } from "./dto/task-create.dto";
 import { TaskStatus } from "./task-status.enum";
 import { InternalServerErrorException } from "@nestjs/common";
 import { TaskFilterDto } from "./dto/task-filter.dto";
 
-@EntityRepository(Task)
-export class TaskRepository extends Repository<Task> {
+@EntityRepository(Rask)
+export class TaskRepository extends Repository<Rask> {
 
-    async createTask(taskCreateDto: TaskCreateDto): Promise<Task> {
+    async createTask(taskCreateDto: TaskCreateDto): Promise<Rask> {
         const { title, description } = taskCreateDto;
 
-        const task: Task = new Task();
+        const task: Rask = new Rask();
         task.title = title;
         task.description = description;
         task.status = TaskStatus.OPEN;
@@ -25,7 +25,7 @@ export class TaskRepository extends Repository<Task> {
         return task;
     }
 
-    async getTasksWithFilter(taskFilterDto: TaskFilterDto): Promise<Task[]> {
+    async getTasksWithFilter(taskFilterDto: TaskFilterDto): Promise<Rask[]> {
         const { status, search } = taskFilterDto;
         const query = this.createQueryBuilder('task');
 
